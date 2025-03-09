@@ -16,17 +16,18 @@ constructor(private countriesSerices : CountriesService) {
   
 }
 
-
+public isLoading: boolean = false;
 public countries : Country[] = []
 
 searchByCapital (term:string){
 
+  this.isLoading =  true;
   this.countriesSerices.searchCapital(term)
   .subscribe( countries =>{
 
     this.countries = countries
 
-    console.log(countries)
+    this.isLoading= false;
   });
   
  
