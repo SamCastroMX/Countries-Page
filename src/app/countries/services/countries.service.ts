@@ -10,7 +10,20 @@ import { Region } from '../interfaces/region.type';
 export class CountriesService {
     private apiUrl: string = 'https://restcountries.com/v3.1'
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) { 
+        this.loadFromLocalStorage();
+    }
+
+    private saveToLocalStorage(){
+        localStorage.setItem('cacheStore', JSON.stringify(this.cashStore))
+    }
+
+    private loadFromLocalStorage(){
+        if(!localStorage.getItem('cacheStore')) return;
+        
+        console.log(localStorage.getItem('cacheStore'))
+        this.cashStore = JSON.parse(localStorage.getItem('cacheStore')!);
+    }
 
     public cashStore: CacheStore  = {
         byCapital: { term: '', countries: [] },
@@ -44,7 +57,8 @@ export class CountriesService {
         const url = `${this.apiUrl}/capital/${term}`;
         return this.getCountriesRequest(url)
         .pipe(
-            tap((countries) => this.cashStore.byCapital = {term, countries})
+            tap((countries) => this.cashStore.byCapital = {term, countries}),
+            tap(()=> this.saveToLocalStorage()),
         )
 
     }
@@ -53,7 +67,9 @@ export class CountriesService {
         const url = `${this.apiUrl}/name/${term}`;
         return this.getCountriesRequest(url)
         .pipe(
-            tap(countries => this.cashStore.byCountry = {term,countries})
+            tap(countries => this.cashStore.byCountry = {term,countries}),
+            tap(()=> this.saveToLocalStorage()),
+
         )
     }
 
@@ -62,7 +78,8 @@ export class CountriesService {
         const url = `${this.apiUrl}/region/${term}`;
         return this.getCountriesRequest(url)
         .pipe(
-            tap(countries => this.cashStore.byRegion = {region:term,countries})
+            tap(countries => this.cashStore.byRegion = {region:term,countries}),
+            tap(()=> this.saveToLocalStorage()),
         )
     }
 
